@@ -1,21 +1,23 @@
 require 'contracts'
 
 class Array
-		include Contracts::Core
-  		include Contracts::Builtin
+    include Contracts::Core
+    include Contracts::Builtin
+    include Contracts::Invariants
+    @original_array_hash = 0
 
-  		@old_hash
+    invariant(self) {self.hash == @original_array_hash}
 
-		Contract Num => Array
-		def multithreaded_sort(duration)
-			@old_hash = self.hash()
+    Contract Num => Array
+    def multithreaded_sort(duration)
+        @original_array_hash = self.hash
 
-			self[0] = 10
+        #self[0] = 10
 
-			puts self
-		end
+        return []
+    end
 
-		def mergesort(q, r)
+    def mergesort(q, r)
 
-		end
+    end
 end
