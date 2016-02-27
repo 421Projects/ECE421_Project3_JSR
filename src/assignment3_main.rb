@@ -13,8 +13,33 @@ class Array
     invariant(self) {self.hash == @original_array_hash}
     invariant(@duration) {@duration.hash == @original_duration_hash}
 
-    Contract Pos => Array
-    def multithreaded_sort(duration)
+    def precondition_block_check(&block)
+        raise ArgumentError, "Block doesn't accept two arguments." unless
+            block.arity == 2
+        b = Proc.new do
+            #|x,y| x<=>y
+            |x,y|
+            block.call(x,y)
+        end
+
+        # ensure that the return values are acceptable
+        acceptable_return_values = [-1,0,1]
+        raise ArgumentError, "Block return value incorrect." unless
+            acceptable_return_values.member?(b.call(1,1))
+        raise ArgumentError, "Block return value incorrect." unless
+            acceptable_return_values.member?(b.call(2,1))
+        raise ArgumentError, "Block return value incorrect." unless
+            acceptable_return_values.member?(b.call(1,2))
+
+        # ensure that each of the three different cases
+        # returns a different value
+        raise ArgumentError, "Block return value incorrect." unless
+            [b.call(1,1), b.call(2,1), b.call(1,2)].uniq.size == 3
+    end
+
+    Contract Contracts::Pos, Maybe[Proc] => Array
+    def multithreaded_sort(duration, &block)
+        precondition_block_check(&block) if block != nil
         @duration = duration
         @original_array_hash = self.hash
         @original_duration_hash = @duration.hash
