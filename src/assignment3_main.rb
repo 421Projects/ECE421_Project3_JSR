@@ -13,7 +13,7 @@ class Array
     invariant(self) {self.hash == @original_array_hash}
     invariant(@duration) {@duration.hash == @original_duration_hash}
 
-    Contract Num => Array
+    Contract Pos => Array
     def multithreaded_sort(duration)
         @duration = duration
         @original_array_hash = self.hash
@@ -23,7 +23,7 @@ class Array
         # and don't change the above lines
 
         #self[0] = 10
-        @duration = 1
+        #@duration = 1
 
         return []
     end
