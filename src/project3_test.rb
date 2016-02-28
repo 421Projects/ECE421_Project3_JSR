@@ -397,7 +397,8 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         if (original_array == result_array)
         # not sorted, time ran out, presumably
         else
-            assert_equal(sorted_array, result_array)
+            assert_equal(sorted_array, result_array,
+                         "The array: #{array_to_sort_and_time} was not properly sorted.")
         end
 
     end
@@ -575,6 +576,52 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
         check_if_done_in_time(arr) { |x,y|
             x.send("var1") <=> y.send("var2")
+        }
+    end
+
+    def test_other_assorted_tests
+        # the following tests were
+        # found on this website
+        # https://reprog.wordpress.com/2010/05/20/what-does-it-take-to-test-a-sorting-routine/
+        tests = [
+            [],
+            [ 0 ],
+            [ 0, 0 ],
+            [ 0, 0, 0 ],
+            [ 0, 1 ],
+            [ 1, 0 ],
+            [ 0, 1, 2 ],
+            [ 0, 2, 1 ],
+            [ 1, 0, 2 ],
+            [ 1, 2, 0 ],
+            [ 2, 0, 1 ],
+            [ 2, 1, 0 ],
+            [ 0, 1, 1 ],
+            [ 1, 0, 1 ],
+            [ 1, 1, 0 ],
+            [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+            [ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ],
+            [ 42, 9, 17, 54, 602, -3, 54, 999, -11 ],
+            [ -11, -3, 9, 17, 42, 54, 54, 602, 999 ],
+        ]
+
+        # courtesy of
+        # https://reprog.wordpress.com/2010/05/20/what-does-it-take-to-test-a-sorting-routine/
+        10.times do
+            a = []
+            rand(100).times do
+                if (rand()*1000).to_i.modulo(2) == 1
+                    a << -(rand(1000000)-500000)/(rand()*94)
+                else
+                    a << (rand(1000000)-500000)/(rand()*94)
+                end
+            end
+            tests << [a]
+        end
+
+        tests.each {
+            |test|
+            check_if_done_in_time(test)
         }
     end
 
