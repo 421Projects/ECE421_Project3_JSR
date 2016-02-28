@@ -6,7 +6,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
     def large_time
         99999
     end
-    
+
     def test_has_functionality
         assert([].respond_to?:multithreaded_sort)
     end
@@ -77,16 +77,20 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_object_repeated
         arr = [1,2,1]
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array doesn't handle repeated values.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array doesn't handle repeated values.")
 
         arr = [838923,1098123,838923,290834,1293804,838923]
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array doesn't handle repeated values.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array doesn't handle repeated values.")
 
         arr = ["a","asdasd","a"]
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array doesn't handle repeated values.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array doesn't handle repeated values.")
 
         arr = ["a98Y(*H)","rep","IJ(J)(J)asdasd","rep","a()JC(DPOJC*J$)","rep","rep"]
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array doesn't handle repeated values.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array doesn't handle repeated values.")
     end
 
     def test_already_ordered
@@ -137,20 +141,30 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         small_neg = [-3,-43,-123,-41,-1]
         large_neg = [-123129123,-12993849,-82348912,-73246814,-65234763524,-16253765]
 
-        assert_equal(small_pos.sort, small_pos.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(large_pos.sort, large_pos.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(small_neg.sort, small_neg.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(large_neg.sort, large_neg.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(small_pos.sort, small_pos.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(large_pos.sort, large_pos.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(small_neg.sort, small_neg.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(large_neg.sort, large_neg.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         small_pos_with_dec = [1.812,15.8201,99.8123,2,49.82,12,33.910283]
-        large_pos_with_dec = [10231.24,193091.82930,803012.4,9192849.2834,10293.8901,92384.09823094,1209.3]
+        large_pos_with_dec = [10231.24,193091.82930,803012.4,9192849.2834,
+                              10293.8901, 92384.09823094,1209.3]
         small_neg_with_dec = [-3.01290,-43.90123,-123.0812,-41.1092,-1.0912]
-        large_neg_with_dec = [-1231.29123,-12.993849,-8234891.2,-7324.6814,-652347.63524,-1625.3765]
+        large_neg_with_dec = [-1231.29123,-12.993849,-8234891.2,-7324.6814,
+                              -652347.63524,-1625.3765]
 
-        assert_equal(small_pos_with_dec.sort, small_pos_with_dec.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(large_pos_with_dec.sort, large_pos_with_dec.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(small_neg_with_dec.sort, small_neg_with_dec.multithreaded_sort(large_time), "Array not sorted properly.")
-        assert_equal(large_neg_with_dec.sort, large_neg_with_dec.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(small_pos_with_dec.sort, small_pos_with_dec.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(large_pos_with_dec.sort, large_pos_with_dec.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(small_neg_with_dec.sort, small_neg_with_dec.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
+        assert_equal(large_neg_with_dec.sort, large_neg_with_dec.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
     end
 
     def test_string_object
@@ -169,55 +183,67 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
     def test_randomly_generated_numbers_positives_only
         # non decimals
         arr = generate_random_number_array(0,rand()*1000,1,2390)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(0,rand()*100,1,9929)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # decimals
         arr = generate_random_number_array(0,rand()*1000,rand(),100)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(0,rand()*100,rand(),10000)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
     end
 
     def test_randomly_generated_numbers_negatives_only
         # non decimals
         arr = generate_random_number_array(-rand()*1000,0,1,2390)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(-rand()*100,0,1,9929)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # decimals
         arr = generate_random_number_array(-rand()*1000,0,rand(),100)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(-rand()*100,0,rand(),10000)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
     end
 
     def test_randomly_generated_numbers_both
         # non decimals
         arr = generate_random_number_array(-rand()*483,rand()*823,1,2390)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(-rand()*983,rand()*398,1,9929)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # decimals
         arr = generate_random_number_array(-rand()*372,rand()*389,rand(),100)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
 
         # large array
         arr = generate_random_number_array(-rand()*893,rand()*987,rand(),10000)
-        assert_equal(arr.sort, arr.multithreaded_sort(large_time), "Array not sorted properly.")
+        assert_equal(arr.sort, arr.multithreaded_sort(large_time),
+                     "Array not sorted properly.")
     end
 
 
@@ -235,6 +261,19 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
             x[x.size-1].ord <=> y[y.size-1].ord
+        }
+
+        assert_equal(sorted_array, multithreaded_sorted_array,
+                     "Custom criterion failed. Array not sorted properly.")
+
+        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+
+        sorted_array = arr.sort { |x,y|
+            y[y.size-1].ord <=> x[x.size-1].ord
+        }
+
+        multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
+            y[y.size-1].ord <=> x[x.size-1].ord
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
@@ -260,11 +299,11 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = [d1,d2,d3,d4,d5,d6]
 
         sorted_array = arr.sort { |x,y|
-            x.var1 <=> y.var1
+            x.send("var1") <=> y.send("var1")
         }
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
-            x.var1 <=> y.var1
+            x.send("var1") <=> y.send("var1")
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
@@ -290,11 +329,11 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = [d1,d2,d3,d4,d5,d6]
 
         sorted_array = arr.sort { |x,y|
-            x.var2 <=> y.var2
+            x.send("var2") <=> y.send("var2")
         }
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
-            x.var2 <=> y.var2
+            x.send("var2") <=> y.send("var2")
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
@@ -320,17 +359,16 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = [d1,d2,d3,d4,d5,d6]
 
         sorted_array = arr.sort { |x,y|
-            x.var1 <=> y.var2
+            x.send("var1") <=> y.send("var2")
         }
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
-            x.var1 <=> y.var2
+            [x.send("var1"),x.send("var2")] <=> [y.send("var1"),y.send("var2")]
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
                      "Custom criterion with custom class failed. "\
                      "Array not sorted properly.")
     end
+
 end
-
-
