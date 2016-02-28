@@ -48,6 +48,12 @@ class Array
             first = tmp_array[0]
             sec = tmp_array[1]
 
+            first_val_class = first.class
+            tmp_array.each { |tmp|
+                next if ((tmp.class).is_a? first_val_class)
+                sec = tmp
+            }
+
             # ensure that the return values are acceptable
             acceptable_return_values = [-1,0,1]
 
