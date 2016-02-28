@@ -77,22 +77,27 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_block_required
         assert_raise ArgumentError do
-            [1,2,"sd"].multithreaded_sort(large_time)
+            ["as",1,2,"sd"].multithreaded_sort(large_time)
         end
         assert_raise ArgumentError do
             [1,2,"sd"].multithreaded_sort(large_time) { puts "a"}
         end
         assert_raise ArgumentError do
-            [1,2,"sd"].multithreaded_sort(large_time) { 0 }
+            [1,2,3,41,"31415",1,"sd"].multithreaded_sort(large_time) { 0 }
         end
         assert_raise ArgumentError do
-            [1,2,[]].multithreaded_sort(large_time) { 1 }
+            [1,2,[],"asd"].multithreaded_sort(large_time) { 1 }
         end
         assert_raise ArgumentError do
-            [1,2,Hash.new].multithreaded_sort(large_time) { -1 }
+            [1,2,Hash.new, Hash.new].multithreaded_sort(large_time) { -1 }
         end
         assert_raise ArgumentError do
             [1,2,"string"].multithreaded_sort(large_time) { |x,y|
+                x <=> y
+            }
+        end
+        assert_raise ArgumentError do
+            [1,2,[],2,34,12].multithreaded_sort(large_time) { |x,y|
                 x <=> y
             }
         end
