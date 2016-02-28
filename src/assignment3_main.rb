@@ -31,17 +31,11 @@ class Array
                 acceptable_return_values.member?(block.call(first,sec))
             raise ArgumentError, "Block return value incorrect." unless
                 acceptable_return_values.member?(block.call(sec,first))
-            raise ArgumentError, "Returns same value for different objects." if
-                (block.call(sec,first) == block.call(first,sec))
-            raise ArgumentError, "Same objects are not returning 0." unless
-                acceptable_return_values[1] == (block.call(first,first))
-            raise ArgumentError, "Same objects are not returning 0." unless
-                acceptable_return_values[1] == (block.call(sec,sec))
-
-            # ensure that each of the three different cases
-            # returns a different value
             raise ArgumentError, "Block return value incorrect." unless
-                [block.call(first,sec), block.call(sec,first), block.call(first,first)].uniq.size == 3
+                acceptable_return_values.member?(block.call(first,first))
+            raise ArgumentError, "Block return value incorrect." unless
+                acceptable_return_values.member?(block.call(sec,sec))
+
         end
     end
 
