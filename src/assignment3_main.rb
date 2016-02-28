@@ -22,6 +22,13 @@ class Array
             tmp_array.uniq!
             first = tmp_array[0]
             sec = tmp_array[1]
+
+            first_val_class = first.class
+            tmp_array.each { |tmp|
+                next if ((tmp.class).is_a? first_val_class)
+                sec = tmp
+            }
+
             raise ArgumentError, "Block doesn't accept two arguments." unless
                 block.arity == 2
 
