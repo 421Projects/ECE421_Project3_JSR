@@ -363,12 +363,222 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         }
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
-            [x.send("var1"),x.send("var2")] <=> [y.send("var1"),y.send("var2")]
+            x.send("var1") <=> y.send("var2")
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
                      "Custom criterion with custom class failed. "\
                      "Array not sorted properly.")
     end
+
+
+
+    def check_if_done_in_time(array_to_sort_and_time, &block)
+        time_leeway = 0.5
+        original_array = array_to_sort_and_time
+        duration = rand() * 5
+
+        if block_given?
+            sorted_array = array_to_sort_and_time.sort {|x,y| block.call(x,y)}
+        else
+            sorted_array = array_to_sort_and_time.sort
+        end
+
+        if block_given?
+            before_calling = Time.now
+            result_array = array_to_sort_and_time.multithreaded_sort(duration){|x,y| block.call(x,y)}
+            after_calling = Time.now
+        else
+            before_calling = Time.now
+            result_array = array_to_sort_and_time.multithreaded_sort(duration)
+            after_calling = Time.now
+        end
+
+        computation_time = after_calling - before_calling
+        assert(computation_time <= duration + time_leeway, "Computation took too long.")
+        if (original_array == result_array)
+        # not sorted, time ran out, presumably
+        else
+            assert_equal(sorted_array, result_array)
+        end
+
+    end
+
+    # test basic sorting capabilities
+    def test_number_object_with_timing
+        small_pos = [1,15,99,2,49,12,33]
+        large_pos = [1023124,19309182930,8030124,91928492834,102938901,9238409823094,12093]
+        small_neg = [-3,-43,-123,-41,-1]
+        large_neg = [-123129123,-12993849,-82348912,-73246814,-65234763524,-16253765]
+        small_pos_with_dec = [1.812,15.8201,99.8123,2,49.82,12,33.910283]
+        large_pos_with_dec = [10231.24,193091.82930,803012.4,9192849.2834,
+                              10293.8901, 92384.09823094,1209.3]
+        small_neg_with_dec = [-3.01290,-43.90123,-123.0812,-41.1092,-1.0912]
+        large_neg_with_dec = [-1231.29123,-12.993849,-8234891.2,-7324.6814,
+                              -652347.63524,-1625.3765]
+        arrs = [small_pos, large_pos, small_neg, large_neg,
+                small_pos_with_dec, large_pos_with_dec, small_neg_with_dec,
+                large_neg_with_dec]
+
+        arrs.each {
+            |arr|
+            check_if_done_in_time(arr)
+        }
+    end
+
+    def test_string_object_with_timing
+        small_words = ["asd","921","asdc","Asd","ASD(**(J)"]
+        large_words = ["asd*(U(*HC(*H*98u8d9h2n89N(*H)","921)(SJ*HC(*HN@aposk9j)",
+                       "asdc)(U@*HNOIDNonc)","AsdAP(SD()J@)","ASD(**(Japoskd9j2c902@)"]
+
+        arrs = [small_words, large_words]
+
+        arrs.each {
+            |arr|
+            check_if_done_in_time(arr)
+        }
+    end
+
+    def test_randomly_generated_numbers_positives_only_with_timing
+        # non decimals
+        arr1 = generate_random_number_array(0,rand()*1000,1,2390)
+
+        # large array
+        arr2 = generate_random_number_array(0,rand()*100,1,9929)
+
+        # decimals
+        arr3 = generate_random_number_array(0,rand()*1000,rand(),100)
+
+        # large array
+        arr4 = generate_random_number_array(0,rand()*100,rand(),10000)
+
+        arrs = [arr1, arr2, arr3, arr4]
+        arrs.each {
+            |arr|
+            check_if_done_in_time(arr)
+        }
+    end
+
+    def test_randomly_generated_numbers_negatives_only_with_timing
+        # non decimals
+        arr1 = generate_random_number_array(-rand()*1000,0,1,2390)
+
+        # large array
+        arr2 = generate_random_number_array(-rand()*100,0,1,9929)
+
+        # decimals
+        arr3 = generate_random_number_array(-rand()*1000,0,rand(),100)
+
+        # large array
+        arr4 = generate_random_number_array(-rand()*100,0,rand(),10000)
+
+        arrs = [arr1, arr2, arr3, arr4]
+        arrs.each {
+            |arr|
+            check_if_done_in_time(arr)
+        }
+    end
+
+    def test_randomly_generated_numbers_both_with_timing
+        # non decimals
+        arr1 = generate_random_number_array(-rand()*483,rand()*823,1,2390)
+
+        # large array
+        arr2 = generate_random_number_array(-rand()*983,rand()*398,1,9929)
+
+        # decimals
+        arr3 = generate_random_number_array(-rand()*372,rand()*389,rand(),100)
+
+        # large array
+        arr4 = generate_random_number_array(-rand()*893,rand()*987,rand(),10000)
+
+        arrs = [arr1, arr2, arr3, arr4]
+        arrs.each {
+            |arr|
+            check_if_done_in_time(arr)
+        }
+    end
+
+    def test_custom_sort_with_timing
+        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+
+        check_if_done_in_time(arr) { |x,y|
+            x[x.size-1].ord <=> y[y.size-1].ord
+        }
+
+        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+
+        check_if_done_in_time(arr) { |x,y|
+            y[y.size-1].ord <=> x[x.size-1].ord
+        }
+    end
+
+    def test_dummyObject1_with_timing
+        d1 = DummyClass.new
+        d2 = DummyClass.new
+        d3 = DummyClass.new
+        d4 = DummyClass.new
+        d5 = DummyClass.new
+        d6 = DummyClass.new
+
+        d1.var1, d1.var2 = [14713,83236]
+        d2.var1, d2.var2 = [91240,21236]
+        d3.var1, d3.var2 = [89202,12136]
+        d4.var1, d4.var2 = [23814,23846]
+        d5.var1, d5.var2 = [89237,12346]
+        d6.var1, d6.var2 = [89492,20136]
+
+        arr = [d1,d2,d3,d4,d5,d6]
+
+        check_if_done_in_time(arr) { |x,y|
+            x.send("var1") <=> y.send("var1")
+        }
+    end
+
+    def test_dummyObject2_with_timing
+        d1 = DummyClass.new
+        d2 = DummyClass.new
+        d3 = DummyClass.new
+        d4 = DummyClass.new
+        d5 = DummyClass.new
+        d6 = DummyClass.new
+
+        d1.var1, d1.var2 = [14.713,83.236]
+        d2.var1, d2.var2 = [91.240,21.236]
+        d3.var1, d3.var2 = [89.202,12.136]
+        d4.var1, d4.var2 = [23.814,23.846]
+        d5.var1, d5.var2 = [89.237,12.346]
+        d6.var1, d6.var2 = [89.492,20.136]
+
+        arr = [d1,d2,d3,d4,d5,d6]
+
+        check_if_done_in_time(arr) { |x,y|
+            x.send("var2") <=> y.send("var2")
+        }
+
+    end
+
+    def test_dummyObject3_with_timing
+        d1 = DummyClass.new
+        d2 = DummyClass.new
+        d3 = DummyClass.new
+        d4 = DummyClass.new
+        d5 = DummyClass.new
+        d6 = DummyClass.new
+
+        d1.var1, d1.var2 = ["14713","83236"]
+        d2.var1, d2.var2 = ["91240","21236"]
+        d3.var1, d3.var2 = ["89202","12136"]
+        d4.var1, d4.var2 = ["23814","23846"]
+        d5.var1, d5.var2 = ["89237","12346"]
+        d6.var1, d6.var2 = ["89492","20136"]
+
+        arr = [d1,d2,d3,d4,d5,d6]
+
+        check_if_done_in_time(arr) { |x,y|
+            x.send("var1") <=> y.send("var2")
+        }
+    end
+
 
 end
