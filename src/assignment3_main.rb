@@ -25,7 +25,7 @@ class Array
 
             first_val_class = first.class
             tmp_array.each { |tmp|
-                next if ((tmp.class).is_a? first_val_class)
+                next if (tmp.is_a? first_val_class)
                 sec = tmp
             }
 
@@ -57,7 +57,7 @@ class Array
 
             first_val_class = first.class
             tmp_array.each { |tmp|
-                next if ((tmp.class).is_a? first_val_class)
+                next if (tmp.is_a? first_val_class)
                 sec = tmp
             }
 
