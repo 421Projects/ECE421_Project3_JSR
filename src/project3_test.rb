@@ -28,7 +28,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
     end
 
     def test_no_duration
-        assert_raise ArgumentError do
+        assert_raise ParamContractError do
             [].multithreaded_sort
         end
     end
@@ -245,8 +245,6 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
     end
-
-
 
     class DummyClass
         attr_accessor :var1, :var2
