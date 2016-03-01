@@ -19,29 +19,39 @@ class Array
         if tmp_array.uniq.empty?
             return
         elsif tmp_array.uniq.size >= 2
-            tmp_array.uniq!
-            first = tmp_array[0]
-            sec = tmp_array[1]
-
-            first_val_class = first.class
-            tmp_array.each { |tmp|
-                next if (tmp.is_a? first_val_class)
-                sec = tmp
-            }
-
             raise ArgumentError, "Block doesn't accept two arguments." unless
                 block.arity == 2
 
-            # ensure that the return values are acceptable
+            tmp_array.uniq!
             acceptable_return_values = [-1,0,1]
-            raise ArgumentError, "Block return value incorrect." unless
-                acceptable_return_values.member?(block.call(first,sec))
-            raise ArgumentError, "Block return value incorrect." unless
-                acceptable_return_values.member?(block.call(sec,first))
-            raise ArgumentError, "Block return value incorrect." unless
-                acceptable_return_values.member?(block.call(first,first))
-            raise ArgumentError, "Block return value incorrect." unless
-                acceptable_return_values.member?(block.call(sec,sec))
+            tmp_array.combination(2).each { |comb|
+                first = comb[0]
+                sec = comb[1]
+
+                begin
+                    # ensure that the return values are acceptable
+                    raise ArgumentError, "Block return value incorrect." unless
+                        acceptable_return_values.member?(block.call(first,sec))
+                    raise ArgumentError, "Block return value incorrect." unless
+                        acceptable_return_values.member?(block.call(sec,first))
+                    raise ArgumentError, "Block return value incorrect." unless
+                        acceptable_return_values.member?(block.call(first,first))
+                    raise ArgumentError, "Block return value incorrect." unless
+                        acceptable_return_values.member?(block.call(sec,sec))
+                rescue
+                    raise ArgumentError, "Block couldn't sort these two elements: "\
+                                         "#{first} and #{sec}"
+                end
+
+            }
+            # first = tmp_array[0]
+            # sec = tmp_array[1]
+
+            # first_val_class = first.class
+            # tmp_array.each { |tmp|
+            #     next if (tmp.is_a? first_val_class)
+            #     sec = tmp
+            # }
 
         end
     end
