@@ -44,15 +44,6 @@ class Array
                 end
 
             }
-            # first = tmp_array[0]
-            # sec = tmp_array[1]
-
-            # first_val_class = first.class
-            # tmp_array.each { |tmp|
-            #     next if (tmp.is_a? first_val_class)
-            #     sec = tmp
-            # }
-
         end
     end
 
