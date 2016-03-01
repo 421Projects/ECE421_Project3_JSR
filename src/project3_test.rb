@@ -92,13 +92,19 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
             [1,2,Hash.new, Hash.new].multithreaded_sort(large_time) { -1 }
         end
         assert_raise ArgumentError do
-            [1,2,"string"].multithreaded_sort(large_time) { |x,y|
+            [1,2,"string", []].multithreaded_sort(large_time) { |x,y|
                 x <=> y
             }
         end
         assert_raise ArgumentError do
             [1,2,[],2,34,12].multithreaded_sort(large_time) { |x,y|
                 x <=> y
+            }
+        end
+
+        assert_raise ArgumentError do
+            [1,2,"293",[],2,34,12].multithreaded_sort(large_time) { |x,y|
+                x.to_i <=> y.to_i
             }
         end
 
