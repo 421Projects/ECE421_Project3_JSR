@@ -16,35 +16,31 @@ class Array
     def precondition_block_check(block)
         tmp_array = self.clone
 
-        if tmp_array.uniq.empty?
-            return
-        elsif tmp_array.uniq.size >= 2
-            raise ArgumentError, "Block doesn't accept two arguments." unless
-                block.arity == 2
+        raise ArgumentError, "Block doesn't accept two arguments." unless
+            block.arity == 2
 
-            tmp_array.uniq!
-            acceptable_return_values = [-1,0,1]
-            tmp_array.combination(2).each { |comb|
-                first = comb[0]
-                sec = comb[1]
+        tmp_array.uniq!
+        acceptable_return_values = [-1,0,1]
+        tmp_array.combination(2).each { |comb|
+            first = comb[0]
+            sec = comb[1]
 
-                begin
-                    # ensure that the return values are acceptable
-                    raise ArgumentError unless
-                        acceptable_return_values.member?(block.call(first,sec))
-                    raise ArgumentError unless
-                        acceptable_return_values.member?(block.call(sec,first))
-                    raise ArgumentError unless
-                        acceptable_return_values.member?(block.call(first,first))
-                    raise ArgumentError unless
-                        acceptable_return_values.member?(block.call(sec,sec))
-                rescue
-                    raise ArgumentError, "Block couldn't properly sort these two elements: "\
-                                         "#{first} and #{sec}"
-                end
+            begin
+                # ensure that the return values are acceptable
+                raise ArgumentError unless
+                    acceptable_return_values.member?(block.call(first,sec))
+                raise ArgumentError unless
+                    acceptable_return_values.member?(block.call(sec,first))
+                raise ArgumentError unless
+                    acceptable_return_values.member?(block.call(first,first))
+                raise ArgumentError unless
+                    acceptable_return_values.member?(block.call(sec,sec))
+            rescue
+                raise ArgumentError, "Block couldn't properly sort these two elements: "\
+                                     "#{first} and #{sec}"
+            end
 
-            }
-        end
+        }
     end
 
     def block_required?
@@ -83,9 +79,6 @@ class Array
 
         # use @duration instead of duration from this point on
         # and don't change the above lines
-
-        #self[0] = 10
-        #@duration = 1
 
         return []
     end
