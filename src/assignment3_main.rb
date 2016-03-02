@@ -58,7 +58,7 @@ class Array
                     acceptable_return_values.member?((sec <=> sec)) and
                     ((sec <=> sec) == (first <=> first)) and
                     [first <=> sec, sec <=> first, first <=> first].uniq.size == 3
-
+                # else
                 return true
             rescue
                 return true
@@ -81,9 +81,5 @@ class Array
         # and don't change the above lines
 
         return []
-    end
-
-    def mergesort(q, r)
-
     end
 end
