@@ -30,16 +30,16 @@ class Array
 
                 begin
                     # ensure that the return values are acceptable
-                    raise ArgumentError, "Block return value incorrect." unless
+                    raise ArgumentError unless
                         acceptable_return_values.member?(block.call(first,sec))
-                    raise ArgumentError, "Block return value incorrect." unless
+                    raise ArgumentError unless
                         acceptable_return_values.member?(block.call(sec,first))
-                    raise ArgumentError, "Block return value incorrect." unless
+                    raise ArgumentError unless
                         acceptable_return_values.member?(block.call(first,first))
-                    raise ArgumentError, "Block return value incorrect." unless
+                    raise ArgumentError unless
                         acceptable_return_values.member?(block.call(sec,sec))
                 rescue
-                    raise ArgumentError, "Block couldn't sort these two elements: "\
+                    raise ArgumentError, "Block couldn't properly sort these two elements: "\
                                          "#{first} and #{sec}"
                 end
 
@@ -49,33 +49,27 @@ class Array
 
     def block_required?
         tmp_array = self.clone
-        if tmp_array.empty? or tmp_array.uniq == nil or tmp_array.uniq.size == 1
-            return false
-        elsif tmp_array.uniq.size >= 2
-            tmp_array.uniq!
-            first = tmp_array[0]
-            sec = tmp_array[1]
+        tmp_array.uniq!
+        acceptable_return_values = [-1,0,1]
+        tmp_array.combination(2).each { |comb|
+            first = comb[0]
+            sec = comb[1]
 
-            first_val_class = first.class
-            tmp_array.each { |tmp|
-                next if (tmp.is_a? first_val_class)
-                sec = tmp
-            }
+            begin
+                next if acceptable_return_values.member?(first <=> sec) and
+                    acceptable_return_values.member?((sec <=> first)) and
+                    acceptable_return_values.member?((first <=> first)) and
+                    acceptable_return_values.member?((sec <=> sec)) and
+                    ((sec <=> sec) == (first <=> first)) and
+                    [first <=> sec, sec <=> first, first <=> first].uniq.size == 3
 
-            # ensure that the return values are acceptable
-            acceptable_return_values = [-1,0,1]
-
-            if acceptable_return_values.member?(first <=> sec) and
-              acceptable_return_values.member?((sec <=> first)) and
-              acceptable_return_values.member?((first <=> first)) and
-              acceptable_return_values.member?((sec <=> sec)) and
-              ((sec <=> sec) == (first <=> first)) and
-              [first <=> sec, sec <=> first, first <=> first].uniq.size == 3
-                return false
-            else
+                return true
+            rescue
                 return true
             end
-        end
+
+        }
+        return false
     end
 
     Contract Contracts::Pos, Maybe[Proc] => Array
