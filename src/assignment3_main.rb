@@ -17,7 +17,7 @@ class Array
         tmp_array = self.clone
 
         raise ArgumentError, "Block doesn't accept two arguments." unless
-            block.arity == 2
+        block.arity == 2
 
         tmp_array.uniq!
         acceptable_return_values = [-1,0,1]
@@ -28,16 +28,16 @@ class Array
             begin
                 # ensure that the return values are acceptable
                 raise ArgumentError unless
-                    acceptable_return_values.member?(block.call(first,sec))
+                acceptable_return_values.member?(block.call(first,sec))
                 raise ArgumentError unless
-                    acceptable_return_values.member?(block.call(sec,first))
+                acceptable_return_values.member?(block.call(sec,first))
                 raise ArgumentError unless
-                    acceptable_return_values.member?(block.call(first,first))
+                acceptable_return_values.member?(block.call(first,first))
                 raise ArgumentError unless
-                    acceptable_return_values.member?(block.call(sec,sec))
+                acceptable_return_values.member?(block.call(sec,sec))
             rescue
                 raise ArgumentError, "Block couldn't properly sort these two elements: "\
-                                     "#{first} and #{sec}"
+                "#{first} and #{sec}"
             end
 
         }
@@ -53,11 +53,11 @@ class Array
 
             begin
                 next if acceptable_return_values.member?(first <=> sec) and
-                    acceptable_return_values.member?((sec <=> first)) and
-                    acceptable_return_values.member?((first <=> first)) and
-                    acceptable_return_values.member?((sec <=> sec)) and
-                    ((sec <=> sec) == (first <=> first)) and
-                    [first <=> sec, sec <=> first, first <=> first].uniq.size == 3
+                acceptable_return_values.member?((sec <=> first)) and
+                acceptable_return_values.member?((first <=> first)) and
+                acceptable_return_values.member?((sec <=> sec)) and
+                ((sec <=> sec) == (first <=> first)) and
+                [first <=> sec, sec <=> first, first <=> first].uniq.size == 3
                 # else
                 return true
             rescue
@@ -80,6 +80,31 @@ class Array
         # use @duration instead of duration from this point on
         # and don't change the above lines
 
+        return mergesort()
+
         return []
+    end
+
+    def mergesort()
+        return self if self.size <= 1
+        left = self[0...(self.size / 2)].mergesort
+        right = self[(self.size / 2)...self.size].mergesort
+
+        return merge(left, right)
+    end
+
+    def merge(left, right)
+        result = []
+
+        while left.size > 0 and right.size > 0
+            
+            result << if left[0] <= right[0]
+                left.shift
+            else
+                right.shift
+            end
+        end
+
+        return result.concat(left).concat(right)
     end
 end
