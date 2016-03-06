@@ -216,12 +216,12 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_randomly_generated_numbers_positives_only
         # non decimals
-        arr = generate_random_number_array(0,rand()*1000,1,2390)
+        arr = generate_random_number_array(0,rand()*1000,1,239)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(0,rand()*100,1,9929)
+        arr = generate_random_number_array(0,rand()*100,1,992)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
@@ -231,19 +231,19 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(0,rand()*100,rand(),10000)
+        arr = generate_random_number_array(0,rand()*100,rand(),1000)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
     end
 
     def test_randomly_generated_numbers_negatives_only
         # non decimals
-        arr = generate_random_number_array(-rand()*1000,0,1,2390)
+        arr = generate_random_number_array(-rand()*1000,0,1,239)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(-rand()*100,0,1,9929)
+        arr = generate_random_number_array(-rand()*100,0,1,992)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
@@ -253,19 +253,19 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(-rand()*100,0,rand(),10000)
+        arr = generate_random_number_array(-rand()*100,0,rand(),1000)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
     end
 
     def test_randomly_generated_numbers_both
         # non decimals
-        arr = generate_random_number_array(-rand()*483,rand()*823,1,2390)
+        arr = generate_random_number_array(-rand()*483,rand()*823,1,239)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(-rand()*983,rand()*398,1,9929)
+        arr = generate_random_number_array(-rand()*983,rand()*398,1,992)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
 
@@ -275,7 +275,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(-rand()*893,rand()*987,rand(),10000)
+        arr = generate_random_number_array(-rand()*893,rand()*987,rand(),1000)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
     end
@@ -285,7 +285,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
     end
 
     def test_custom_sort
-        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+        arr = ["as","pac4","ad2","43g","f3c","d3o3","asd"]
 
         sorted_array = arr.sort { |x,y|
             x[x.size-1].ord <=> y[y.size-1].ord
@@ -391,11 +391,11 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = [d1,d2,d3,d4,d5,d6]
 
         sorted_array = arr.sort { |x,y|
-            x.send("var1") <=> y.send("var2")
+            x.send("var1") <=> y.send("var1")
         }
 
         multithreaded_sorted_array = arr.multithreaded_sort(large_time) { |x,y|
-            x.send("var1") <=> y.send("var2")
+            x.send("var1") <=> y.send("var1")
         }
 
         assert_equal(sorted_array, multithreaded_sorted_array,
@@ -474,16 +474,16 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_randomly_generated_numbers_positives_only_with_timing
         # non decimals
-        arr1 = generate_random_number_array(0,rand()*1000,1,2390)
+        arr1 = generate_random_number_array(0,rand()*1000,1,239)
 
         # large array
-        arr2 = generate_random_number_array(0,rand()*100,1,9929)
+        arr2 = generate_random_number_array(0,rand()*100,1,992)
 
         # decimals
         arr3 = generate_random_number_array(0,rand()*1000,rand(),100)
 
         # large array
-        arr4 = generate_random_number_array(0,rand()*100,rand(),10000)
+        arr4 = generate_random_number_array(0,rand()*100,rand(),1000)
 
         arrs = [arr1, arr2, arr3, arr4]
         arrs.each {
@@ -494,16 +494,16 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_randomly_generated_numbers_negatives_only_with_timing
         # non decimals
-        arr1 = generate_random_number_array(-rand()*1000,0,1,2390)
+        arr1 = generate_random_number_array(-rand()*1000,0,1,239)
 
         # large array
-        arr2 = generate_random_number_array(-rand()*100,0,1,9929)
+        arr2 = generate_random_number_array(-rand()*100,0,1,992)
 
         # decimals
         arr3 = generate_random_number_array(-rand()*1000,0,rand(),100)
 
         # large array
-        arr4 = generate_random_number_array(-rand()*100,0,rand(),10000)
+        arr4 = generate_random_number_array(-rand()*100,0,rand(),1000)
 
         arrs = [arr1, arr2, arr3, arr4]
         arrs.each {
@@ -514,16 +514,16 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
 
     def test_randomly_generated_numbers_both_with_timing
         # non decimals
-        arr1 = generate_random_number_array(-rand()*483,rand()*823,1,2390)
+        arr1 = generate_random_number_array(-rand()*483,rand()*823,1,239)
 
         # large array
-        arr2 = generate_random_number_array(-rand()*983,rand()*398,1,9929)
+        arr2 = generate_random_number_array(-rand()*983,rand()*398,1,992)
 
         # decimals
         arr3 = generate_random_number_array(-rand()*372,rand()*389,rand(),100)
 
         # large array
-        arr4 = generate_random_number_array(-rand()*893,rand()*987,rand(),10000)
+        arr4 = generate_random_number_array(-rand()*893,rand()*987,rand(),1000)
 
         arrs = [arr1, arr2, arr3, arr4]
         arrs.each {
@@ -533,13 +533,13 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
     end
 
     def test_custom_sort_with_timing
-        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+        arr = ["as","pac4","ad2","43g","f3c","d3o3","asd"]
 
         check_if_done_in_time(arr) { |x,y|
             x[x.size-1].ord <=> y[y.size-1].ord
         }
 
-        arr = ["as","pac2","ad2","43g","f3c","d3o3","asd"]
+        arr = ["as","pac4","ad2","43g","f3c","d3o3","asd"]
 
         check_if_done_in_time(arr) { |x,y|
             y[y.size-1].ord <=> x[x.size-1].ord
@@ -609,7 +609,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = [d1,d2,d3,d4,d5,d6]
 
         check_if_done_in_time(arr) { |x,y|
-            x.send("var1") <=> y.send("var2")
+            x.send("var1") <=> y.send("var1")
         }
     end
 

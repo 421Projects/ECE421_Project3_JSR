@@ -84,11 +84,10 @@ class Array
         # use @duration instead of duration from this point on
         # and don't change the above lines
 
+        sorted = []
         begin 
-            sorted = []
-            Timeout::timeout(@duration) {sorted = mergesort(&block)}
+            sorted = Timeout.timeout(@duration) {Thread.new {sorted = mergesort(&block)}.value}
             Thread.list.each {|t| t.kill if t != Thread.current}
-            sorted
         rescue Timeout::Error
             Thread.list.each {|t| t.kill if t != Thread.current}
             puts "#{@duration} second(s) have elapsed. Timeout! Safely exiting and terminating all threads."
@@ -96,7 +95,7 @@ class Array
             Thread.list.each {|t| t.kill if t != Thread.current}
             puts "A thread has encountered an error. Safely exiting and terminating all threads."
         end
-
+        sorted
     end
 
     
