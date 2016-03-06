@@ -1,4 +1,5 @@
 require 'contracts'
+require 'timeout'
 
 class Array
     include Contracts::Core
@@ -13,6 +14,7 @@ class Array
     invariant(self) {self.hash == @original_array_hash}
     invariant(@duration) {@duration.hash == @original_duration_hash}
 
+    
     def precondition_block_check(block)
         tmp_array = self.clone
 
@@ -43,6 +45,7 @@ class Array
         }
     end
 
+    
     def block_required?
         tmp_array = self.clone
         tmp_array.uniq!
@@ -68,6 +71,7 @@ class Array
         return false
     end
 
+    
     Contract Contracts::Pos, Maybe[Proc] => Array
     def multithreaded_sort(duration, &block)
         raise ArgumentError, "Block required." if (block_required?) and (block_given? == false)
@@ -80,33 +84,95 @@ class Array
         # use @duration instead of duration from this point on
         # and don't change the above lines
 
-        return mergesort()
+        begin 
+            Timeout::timeout(@duration) {mergesort}
+        rescue Timeout::Error
+            puts "#{@duration} seconds have elapsed. Timeout! Safely exiting and terminating all threads."
+            Thread.list.each {|t| t.kill}
+        rescue ThreadError
+            puts "A thread has encountered an error. Safely exiting and terminating all threads."
+            Thread.list.each {|t| t.kill}
+        end
 
-        return []
     end
 
+    
     def mergesort()
         return self if self.size <= 1
         
         threads = []
-        left = []
-        right = []
-        threads << Thread.new {left = self[0...(self.size / 2)].mergesort}
-        threads << Thread.new {right = self[(self.size / 2)...self.size].mergesort}
+        threads << Thread.new {self[0...(self.size / 2)].mergesort}
+        threads << Thread.new {self[(self.size / 2)...self.size].mergesort}
 
         threads.each(&:join)
-        return merge(left, right)
+        return merge(threads[0].value, threads[1].value)
     end
 
+    
     def merge(left, right)
-        merged = []
-        left = left.to_a unless left.is_a? Array
-        right = right.to_a unless right.is_a? Array
+        # Assumes #left and #right are already sorted in ascending order.
+        # Returns a sorted array containing all elements (merged) of #left and #right.
+        
+        # Return immediately if either array is empty.
+        return left if right.empty?
+        return right if left.empty?
+        
+        # If each array only contains one element, merge them manually.
+        if left.size == 1 and right.size == 1
+            return [[left[0], right[0]].min, [left[0], right[0]].max]
+        end
+        
+        # If #left has only one element, find its appropriate position in #right and merge.
+        if left.size == 1
+            return left.concat(right) if left[0] <= right[0]
+            return right.concat(left) if left[0] >= right[-1]
+            right.each_with_index {|x, i| return right[0...i].concat(left).concat(right[i...right.size]) if left[0] <= x}
+        end
+        
+        # If #right has only one element, do the above.
+        if right.size == 1
+            return merge(right, left)
+        end
+        
+        # Optimization: Since #left and #right are sorted, if their last and first elements are sequential, combine them.
+        return left.concat(right) if left.last <= right.first
+        return right.concat(left) if right.last <= left.first
+        
+        # Swap the argument order to keep the larger array as the first argument.
+        merge(right, left) if right.size > left.size
+                
+        # Find index in #left such that #left[i] <= center_of_#right <= #left[i+1] using binary search; return otherwise.
+        lpivot = left.size/2
+        rpivot = custom_binsearch(right, left[lpivot])
+        
+        # Split the work of merging using the pivots; merge half on one thread, and half on another, then combine the results.
+        tl = Thread.new {merge(left.take(lpivot), right.take(rpivot+1))}
+        tr = Thread.new {merge(left.drop(lpivot), right.drop(rpivot+1))}
+        
+        return tl.value + tr.value
+    end
+        
 
-        while !left.empty? and !right.empty?
-            left.first <= right.first ? merged << left.shift : merged << right.shift
+    private def custom_binsearch(arr, val)
+        # Cistom Binary Search for MergeSort:
+        # Finds index in #arr such that #arr[i] <= #val <= #arr[i+1];
+        # Returns -1 or #arr.size if val is too small or too large, respectively.
+    
+        lower = 0
+        upper = arr.size - 1
+
+        while (upper >= lower)
+            middle = (upper+lower)/2
+            if val > arr[middle]
+                lower = middle + 1
+            elsif val < arr[middle]
+                upper = middle - 1
+            else
+                return middle
+            end
         end
 
-        return merged.concat(left).concat(right)
+        return upper
     end
+
 end
