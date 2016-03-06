@@ -87,11 +87,11 @@ class Array
         begin 
             Timeout::timeout(@duration) {mergesort}
         rescue Timeout::Error
-            puts "#{@duration} seconds have elapsed. Timeout! Safely exiting and terminating all threads."
-            Thread.list.each {|t| t.kill}
+            puts "#{@duration} second(s) have elapsed. Timeout! Safely exiting and terminating all threads."
+            Thread.list.each {|t| t.kill if t != Thread.current}
         rescue ThreadError
             puts "A thread has encountered an error. Safely exiting and terminating all threads."
-            Thread.list.each {|t| t.kill}
+            Thread.list.each {|t| t.kill if t != Thread.current}
         end
 
     end
