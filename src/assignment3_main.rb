@@ -87,9 +87,14 @@ class Array
 
     def mergesort()
         return self if self.size <= 1
-        left = self[0...(self.size / 2)].mergesort
-        right = self[(self.size / 2)...self.size].mergesort
+        
+        threads = []
+        left = []
+        right = []
+        threads << Thread.new {left = self[0...(self.size / 2)].mergesort}
+        threads << Thread.new {right = self[(self.size / 2)...self.size].mergesort}
 
+        threads.each(&:join)
         return merge(left, right)
     end
 
