@@ -108,56 +108,17 @@ class Array
         threads << Thread.new {self[(self.size / 2)...self.size].mergesort(&block)}
 
         threads.each(&:join)
-        return merge_with_block(threads[0].value, threads[1].value, &block) if block_given?
-        return merge(threads[0].value, threads[1].value)
+        
+        if block_given?
+            return merge(threads[0].value, threads[1].value, &block)
+        else
+            # Use the default block for comparisons if none is provided.
+            return merge(threads[0].value, threads[1].value) {|x, y| x <=> y}
+        end
     end
-
-    
-    def merge(left, right)
-        # Assumes #left and #right are already sorted in ascending order.
-        # Returns a sorted array containing all elements (merged) of #left and #right.
-
-        # Return immediately if either array is empty.
-        return left if right.empty?
-        return right if left.empty?
+     
         
-        # If each array only contains one element, merge them manually.
-        if left.size == 1 and right.size == 1
-            return [[left[0], right[0]].min, [left[0], right[0]].max]
-        end
-        
-        # If #left has only one element, find its appropriate position in #right and merge.
-        if left.size == 1
-            return left.concat(right) if left[0] <= right[0]
-            return right.concat(left) if left[0] >= right[-1]
-            right.each_with_index {|x, i| return right.take(i).concat(left).concat(right.drop(i)) if left[0] <= x}
-        end
-        
-        # If #right has only one element, do the above.
-        if right.size == 1
-            return merge(right, left)
-        end
-        
-        # Optimization: Since #left and #right are sorted, if their last and first elements are sequential, combine them.
-        return left.concat(right) if left.last <= right.first
-        return right.concat(left) if right.last <= left.first
-        
-        # Swap the argument order to keep the larger array as the first argument.
-        merge(right, left) if right.size > left.size
-                
-        # Find index in #left such that #left[i] <= center_of_#right <= #left[i+1] using binary search; return otherwise.
-        lpivot = left.size/2
-        rpivot = custom_binsearch(right, left[lpivot])
-        
-        # Split the work of merging using the pivots; merge half on one thread, and half on another, then combine the results.
-        tl = Thread.new {merge(left.take(lpivot), right.take(rpivot+1))}
-        tr = Thread.new {merge(left.drop(lpivot), right.drop(rpivot+1))}
-        
-        return tl.value + tr.value
-    end
-        
-        
-    def merge_with_block(left, right, &block)
+    def merge(left, right, &block)
         # Assumes #left and #right are already sorted in ascending order.
         # Returns a sorted array containing all elements (merged) of #left and #right.
 
@@ -180,7 +141,7 @@ class Array
         
         # If #right has only one element, do the above.
         if right.size == 1
-            return merge_with_block(right, left, &block)
+            return merge(right, left, &block)
         end
         
         # Optimization: Since #left and #right are sorted, if their last and first elements are sequential, combine them.
@@ -188,44 +149,21 @@ class Array
         return right.concat(left) if yield(right.last, left.first) <= 0
         
         # Swap the argument order to keep the larger array as the first argument.
-        merge_with_block(right, left, &block) if right.size > left.size
+        merge(right, left, &block) if right.size > left.size
                 
         # Find index in #left such that #left[i] <= center_of_#right <= #left[i+1] using binary search; return otherwise.
         lpivot = left.size/2
-        rpivot = custom_binsearch_with_block(right, left[lpivot], &block)
+        rpivot = custom_binsearch(right, left[lpivot], &block)
         
         # Split the work of merging using the pivots; merge half on one thread, and half on another, then combine the results.
-        tl = Thread.new {merge_with_block(left.take(lpivot), right.take(rpivot+1), &block)}
-        tr = Thread.new {merge_with_block(left.drop(lpivot), right.drop(rpivot+1), &block)}
+        tl = Thread.new {merge(left.take(lpivot), right.take(rpivot+1), &block)}
+        tr = Thread.new {merge(left.drop(lpivot), right.drop(rpivot+1), &block)}
         
         return tl.value + tr.value
     end        
-        
-
-    private def custom_binsearch(arr, val)
-        # Cistom Binary Search for MergeSort:
-        # Finds index in #arr such that #arr[i] <= #val <= #arr[i+1];
-        # Returns -1 or #arr.size if val is too small or too large, respectively.
-    
-        lower = 0
-        upper = arr.size - 1
-
-        while (upper >= lower)
-            middle = (upper+lower)/2
-            if val > arr[middle]
-                lower = middle + 1
-            elsif val < arr[middle]
-                upper = middle - 1
-            else
-                return middle
-            end
-        end
-
-        return upper
-    end
 
     
-    private def custom_binsearch_with_block(arr, val, &block)
+    private def custom_binsearch(arr, val, &block)
         # Cistom Binary Search for MergeSort:
         # Finds index in #arr such that #arr[i] <= #val <= #arr[i+1];
         # Returns -1 or #arr.size if val is too small or too large, respectively.
