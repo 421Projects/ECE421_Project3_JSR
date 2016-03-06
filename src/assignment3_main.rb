@@ -18,7 +18,7 @@ class Array
     def precondition_block_check(block)
         tmp_array = self.clone
 
-        raise ArgumentError, "Block doesn't accept two arguments." unless
+        raise ArgumentError, "Block requires two arguments." unless
         block.arity == 2
 
         tmp_array.uniq!
@@ -39,7 +39,7 @@ class Array
                 acceptable_return_values.member?(block.call(sec,sec))
             rescue
                 raise ArgumentError, "Block couldn't properly sort these two elements: "\
-                "#{first} and #{sec}"
+                "#{first} and #{sec}. Try using the <=> operator."
             end
 
         }
@@ -85,26 +85,30 @@ class Array
         # and don't change the above lines
 
         begin 
-            Timeout::timeout(@duration) {mergesort}
+            sorted = []
+            Timeout::timeout(@duration) {sorted = mergesort(&block)}
+            Thread.list.each {|t| t.kill if t != Thread.current}
+            sorted
         rescue Timeout::Error
+            Thread.list.each {|t| t.kill if t != Thread.current}
             puts "#{@duration} second(s) have elapsed. Timeout! Safely exiting and terminating all threads."
-            Thread.list.each {|t| t.kill if t != Thread.current}
         rescue ThreadError
-            puts "A thread has encountered an error. Safely exiting and terminating all threads."
             Thread.list.each {|t| t.kill if t != Thread.current}
+            puts "A thread has encountered an error. Safely exiting and terminating all threads."
         end
 
     end
 
     
-    def mergesort()
+    def mergesort(&block)
         return self if self.size <= 1
         
         threads = []
-        threads << Thread.new {self[0...(self.size / 2)].mergesort}
-        threads << Thread.new {self[(self.size / 2)...self.size].mergesort}
+        threads << Thread.new {self[0...(self.size / 2)].mergesort(&block)}
+        threads << Thread.new {self[(self.size / 2)...self.size].mergesort(&block)}
 
         threads.each(&:join)
+        return merge_with_block(threads[0].value, threads[1].value, &block) if block_given?
         return merge(threads[0].value, threads[1].value)
     end
 
@@ -112,7 +116,7 @@ class Array
     def merge(left, right)
         # Assumes #left and #right are already sorted in ascending order.
         # Returns a sorted array containing all elements (merged) of #left and #right.
-        
+
         # Return immediately if either array is empty.
         return left if right.empty?
         return right if left.empty?
@@ -126,7 +130,7 @@ class Array
         if left.size == 1
             return left.concat(right) if left[0] <= right[0]
             return right.concat(left) if left[0] >= right[-1]
-            right.each_with_index {|x, i| return right[0...i].concat(left).concat(right[i...right.size]) if left[0] <= x}
+            right.each_with_index {|x, i| return right.take(i).concat(left).concat(right.drop(i)) if left[0] <= x}
         end
         
         # If #right has only one element, do the above.
@@ -152,6 +156,51 @@ class Array
         return tl.value + tr.value
     end
         
+        
+    def merge_with_block(left, right, &block)
+        # Assumes #left and #right are already sorted in ascending order.
+        # Returns a sorted array containing all elements (merged) of #left and #right.
+
+        # Return immediately if either array is empty.
+        return left if right.empty?
+        return right if left.empty?
+       
+        # If each array only contains one element, merge them manually.
+        if left.size == 1 and right.size == 1
+            return [left[0], right[0]] if yield(left[0], right[0]) <= 0
+            return [right[0], left[0]] if yield(left[0], right[0]) >= 0
+        end
+        
+        # If #left has only one element, find its appropriate position in #right and merge.
+        if left.size == 1
+            return left.concat(right) if yield(left[0], right[0]) <= 0
+            return right.concat(left) if yield(left[0], right[-1]) >= 0
+            right.each_with_index {|x, i| return right.take(i).concat(left).concat(right.drop(i)) if yield(left[0], x) <= 0}
+        end
+        
+        # If #right has only one element, do the above.
+        if right.size == 1
+            return merge_with_block(right, left, &block)
+        end
+        
+        # Optimization: Since #left and #right are sorted, if their last and first elements are sequential, combine them.
+        return left.concat(right) if yield(left.last, right.first) <= 0
+        return right.concat(left) if yield(right.last, left.first) <= 0
+        
+        # Swap the argument order to keep the larger array as the first argument.
+        merge_with_block(right, left, &block) if right.size > left.size
+                
+        # Find index in #left such that #left[i] <= center_of_#right <= #left[i+1] using binary search; return otherwise.
+        lpivot = left.size/2
+        rpivot = custom_binsearch_with_block(right, left[lpivot], &block)
+        
+        # Split the work of merging using the pivots; merge half on one thread, and half on another, then combine the results.
+        tl = Thread.new {merge_with_block(left.take(lpivot), right.take(rpivot+1), &block)}
+        tr = Thread.new {merge_with_block(left.drop(lpivot), right.drop(rpivot+1), &block)}
+        
+        return tl.value + tr.value
+    end        
+        
 
     private def custom_binsearch(arr, val)
         # Cistom Binary Search for MergeSort:
@@ -175,4 +224,26 @@ class Array
         return upper
     end
 
+    
+    private def custom_binsearch_with_block(arr, val, &block)
+        # Cistom Binary Search for MergeSort:
+        # Finds index in #arr such that #arr[i] <= #val <= #arr[i+1];
+        # Returns -1 or #arr.size if val is too small or too large, respectively.
+    
+        lower = 0
+        upper = arr.size - 1
+
+        while (upper >= lower)
+            middle = (upper+lower)/2
+            if yield(val, arr[middle]) == 1
+                lower = middle + 1
+            elsif yield(val, arr[middle]) == -1
+                upper = middle - 1
+            else
+                return middle
+            end
+        end
+
+        return upper
+    end
 end
