@@ -94,17 +94,14 @@ class Array
     end
 
     def merge(left, right)
-        result = []
+        merged = []
+        left = left.to_a unless left.is_a? Array
+        right = right.to_a unless right.is_a? Array
 
-        while left.size > 0 and right.size > 0
-            
-            result << if left[0] <= right[0]
-                left.shift
-            else
-                right.shift
-            end
+        while !left.empty? and !right.empty?
+            left.first <= right.first ? merged << left.shift : merged << right.shift
         end
 
-        return result.concat(left).concat(right)
+        return merged.concat(left).concat(right)
     end
 end
