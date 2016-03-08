@@ -253,7 +253,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
                      "Array not sorted properly.")
 
         # large array
-        arr = generate_random_number_array(-rand()*100,0,rand(),1000)
+        arr = generate_random_number_array(-rand()*100,0,rand(),992)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
     end
@@ -263,7 +263,7 @@ class ArrayMultiThreadSortTest < Test::Unit::TestCase
         arr = generate_random_number_array(-rand()*483,rand()*823,1,239)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
                      "Array not sorted properly.")
-
+        
         # large array
         arr = generate_random_number_array(-rand()*983,rand()*398,1,992)
         assert_equal(arr.sort, arr.multithreaded_sort(large_time),
