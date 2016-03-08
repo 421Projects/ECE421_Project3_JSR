@@ -20,7 +20,7 @@ class Array
     invariant(@duration) {@duration.hash == @original_duration_hash}
 
     
-    private def precondition_block_check(block)
+    def precondition_block_check(block)
         tmp_array = self.clone
 
         raise ArgumentError, "Block requires two arguments." unless
@@ -51,7 +51,7 @@ class Array
     end
 
     
-    private def block_required?
+    def block_required?
         tmp_array = self.clone
         tmp_array.uniq!
         acceptable_return_values = [-1,0,1]
@@ -97,7 +97,7 @@ class Array
                 success = true
             rescue Timeout::Error
                 Thread.list.each {|t| t.kill if t != Thread.current}
-                raise Timeout::Error "#{@duration} second(s) have elapsed. Timeout! Safely exiting and terminating all threads."
+                raise Timeout::Error, "#{@duration} second(s) have elapsed. Timeout! Safely exiting and terminating all threads."
             rescue ThreadError
                 Thread.list.each {|t| t.kill if t != Thread.current}
             end
@@ -107,7 +107,7 @@ class Array
     end
 
     
-    protected def mergesort(&block)
+    def mergesort(&block)
         return self if self.size <= 1
         
         threads = []
@@ -125,7 +125,7 @@ class Array
     end
      
         
-    private def merge(left, right, &block)
+    def merge(left, right, &block)
         # Assumes #left and #right are already sorted in ascending order.
         # Returns a sorted array containing all elements (merged) of #left and #right.
 
